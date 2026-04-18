@@ -33,7 +33,7 @@ Route::middleware(['auth', 'verified'])->prefix('author')->name('author.')->grou
     Route::get('/submissions/{id}/download', [\App\Http\Controllers\AuthorController::class, 'download'])->name('submissions.download');
 
     Route::get('/submissions/{id}/revision', [AuthorController::class, 'editRevision'])->name('submissions.revision');
-    Route::post('/submissions/{id}/revision', [AuthorController::class, 'storeRevision'])->name('submissions.store_revision');
+    Route::post('/submissions/{id}/revision', [AuthorController::class, 'updateRevision'])->name('submissions.updateRevision');
 
     Route::post('/submissions/{id}/payment', [\App\Http\Controllers\AuthorController::class, 'storePayment'])->name('submissions.payment');
     Route::get('/submissions/{id}/loa', [\App\Http\Controllers\AuthorController::class, 'generateLoa'])->name('submissions.loa');
@@ -109,6 +109,7 @@ Route::middleware(['auth', 'verified'])->prefix('reviewer')->name('reviewer.')->
         if (!$column || !$submission->{$column}) abort(404);
         
         $path = $submission->{$column};
+        
 
         if (!\Illuminate\Support\Facades\Storage::disk('local')->exists($path)) {
             abort(404);

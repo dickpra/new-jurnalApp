@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $journalTheme->name }} | {{ $settings->site_name ?? 'AGROMIX' }}</title>
+    <title>{{ $journalTheme->name }} | {{ $settings->site_name ?? 'Publishing Platform' }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
@@ -13,20 +13,20 @@
         .font-sans { font-family: 'Inter', sans-serif; }
     </style>
 </head>
-<body class="font-sans antialiased bg-[#FAF9F6] text-stone-800">
+<body class="font-sans antialiased text-slate-800 bg-slate-50">
 
-    <nav class="bg-white border-b border-stone-200 py-4 sticky top-0 z-50">
-        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+    <nav class="w-full bg-white border-b border-slate-200 py-3">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center h-14">
             <div class="flex items-center space-x-4">
-                <a href="{{ route('home') }}" class="text-xl font-serif font-bold tracking-wide text-stone-900">
-                    {{ $settings->site_name ?? 'AGROMIX' }}
+                <a href="{{ route('home') }}" class="text-xl font-serif font-bold text-slate-900 hover:text-indigo-700 transition">
+                    {{ $settings->site_name ?? 'Journal Platform' }}
                 </a>
             </div>
-            <div class="flex items-center space-x-6">
+            <div class="flex items-center space-x-6 text-sm font-semibold">
                 @auth
-                    <a href="{{ route('author.dashboard') }}" class="text-sm font-medium text-stone-600 hover:text-stone-900">Dashboard</a>
+                    <a href="{{ route('author.dashboard') }}" class="text-slate-600 hover:text-indigo-700 transition">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="text-sm font-medium text-stone-600 hover:text-stone-900">Masuk</a>
+                    <a href="{{ route('login') }}" class="text-slate-600 hover:text-indigo-700 transition">Login</a>
                 @endauth
             </div>
         </div>
@@ -36,61 +36,73 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
             
             <div class="mb-6">
-                <a href="{{ route('home') }}" class="text-sm text-stone-500 hover:text-stone-800 flex items-center transition font-serif">
-                    &larr; Kembali ke Lobi Utama
+                <a href="{{ route('home') }}" class="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition flex items-center">
+                    &larr; Back to Journal List
                 </a>
             </div>
 
-            <div class="bg-white shadow-sm border border-stone-200 overflow-hidden">
+            <div class="bg-white border border-slate-200 shadow-sm rounded-sm">
+                
                 <div class="p-8 md:p-12">
-                    <h1 class="text-4xl font-serif text-stone-900 font-bold mb-6 leading-tight border-b border-stone-100 pb-6">
+                    <div class="mb-3 text-[11px] font-bold text-slate-400 uppercase tracking-widest">
+                        Journal Overview
+                    </div>
+
+                    <h1 class="text-3xl md:text-4xl font-serif text-slate-900 font-bold mb-6 border-b border-slate-100 pb-6 leading-tight">
                         {{ $journalTheme->name }}
                     </h1>
 
-                    <div class="prose prose-stone max-w-none font-serif text-stone-700 leading-relaxed text-justify mb-10">
-                        <h3 class="text-lg font-bold text-stone-900 mb-2 uppercase tracking-widest text-sm">Tentang Jurnal</h3>
+                    <div class="prose prose-slate max-w-none text-slate-700 text-justify mb-10 leading-relaxed font-serif">
                         <p>{{ $journalTheme->description }}</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-stone-100">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
+                        
+                        <!-- APC Info -->
                         <div>
-                            <h3 class="text-sm font-bold text-stone-900 uppercase tracking-widest mb-4">Biaya Registrasi</h3>
-                            <ul class="space-y-2 text-stone-600 font-serif">
-                                <li class="flex justify-between border-b border-stone-50 pb-2">
-                                    <span>Author (Presenter)</span>
-                                    <span class="font-bold text-stone-900">USD {{ number_format($journalTheme->author_fee_usd ?? 0, 2) }}</span>
+                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-l-2 border-indigo-600 pl-3">Publication Fees (APC)</h3>
+                            <ul class="space-y-3 text-sm text-slate-600 ml-3">
+                                <li class="flex justify-between items-center border-b border-slate-100 pb-2">
+                                    <span>Article Processing Charge</span>
+                                    <span class="font-bold text-slate-900">USD {{ number_format($journalTheme->author_fee_usd ?? 0, 2) }}</span>
                                 </li>
-                                <li class="flex justify-between border-b border-stone-50 pb-2">
-                                    <span>Participant (Listener)</span>
-                                    <span class="font-bold text-stone-900">USD {{ number_format($journalTheme->listener_fee_usd ?? 0, 2) }}</span>
+                                <li class="flex justify-between items-center">
+                                    <span>Fast-Track / Additional Author</span>
+                                    <span class="font-bold text-slate-900">USD {{ number_format($journalTheme->listener_fee_usd ?? 0, 2) }}</span>
                                 </li>
                             </ul>
                         </div>
 
+                        <!-- Bank Info -->
                         <div>
-                            <h3 class="text-sm font-bold text-stone-900 uppercase tracking-widest mb-4">Informasi Rekening</h3>
-                            <div class="text-sm text-stone-600 space-y-1 font-serif">
-                                <p><span class="font-bold">Bank:</span> {{ $journalTheme->bank_name ?? '-' }}</p>
-                                <p><span class="font-bold">No. Rekening:</span> {{ $journalTheme->account_number ?? '-' }}</p>
-                                <p><span class="font-bold">Pemilik:</span> {{ $journalTheme->account_owner_name ?? '-' }}</p>
+                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-l-2 border-indigo-600 pl-3">Payment Bank Details</h3>
+                            <div class="space-y-3 text-sm text-slate-600 ml-3">
+                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Bank Name</span> {{ $journalTheme->bank_name ?? '-' }}</div>
+                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Account Number</span> <span class="font-mono text-slate-900 font-medium">{{ $journalTheme->account_number ?? '-' }}</span></div>
+                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Beneficiary Name</span> {{ $journalTheme->account_owner_name ?? '-' }}</div>
                             </div>
                         </div>
+
                     </div>
 
-                    <div class="mt-12 text-center flex flex-col md:flex-row justify-center items-center gap-4">
+                    <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
                         <a href="{{ route('author.submit', $journalTheme->slug) }}" 
-                           class="inline-block w-full md:w-auto px-10 py-4 bg-stone-800 text-white font-serif text-sm font-bold tracking-wider hover:bg-stone-700 transition shadow-md">
-                            KIRIM NASKAH (SUBMIT MANUSCRIPT)
+                           class="flex justify-center items-center px-6 py-3 bg-indigo-700 text-white font-bold text-sm rounded cursor-pointer hover:bg-indigo-800 transition">
+                            Submit Manuscript
                         </a>
                         
                         <a href="{{ route('journal.archive', $journalTheme->slug) }}" 
-                           class="inline-block w-full md:w-auto px-10 py-4 bg-white border-2 border-stone-800 text-stone-800 font-serif text-sm font-bold tracking-wider hover:bg-stone-50 transition shadow-sm">
-                            LIHAT ARSIP (VIEW ARCHIVES)
+                           class="flex justify-center items-center px-6 py-3 bg-white border border-slate-300 text-slate-700 font-bold text-sm rounded cursor-pointer hover:bg-slate-50 transition">
+                            View Archives
                         </a>
                     </div>
+                    
                     @guest
-                        <p class="text-xs text-red-500 mt-4 italic text-center">Anda harus masuk (login) terlebih dahulu sebelum menekan tombol submit.</p>
+                        <div class="mt-6 text-sm text-rose-600 bg-rose-50 border border-rose-100 p-4 rounded-sm">
+                            <strong>Note:</strong> You must <a href="{{ route('login') }}" class="underline hover:text-rose-800">log in</a> before submitting a manuscript.
+                        </div>
                     @endguest
+
                 </div>
             </div>
         </div>

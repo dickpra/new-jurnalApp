@@ -93,47 +93,61 @@ class AuthorController extends Controller
 
     public function editRevision($id)
     {
-        $submission = Submission::findOrFail($id);
-        if ($submission->author_id !== Auth::id() || $submission->status->value !== 'revision_required') {
-            abort(403);
-        }
+        $submission = \App\Models\Submission::where('id', $id)
+                        ->where('author_id', auth()->id())
+                        ->where('status', \App\Enums\SubmissionStatus::REVISION_REQUIRED)
+                        ->firstOrFail();
+
         return view('author.upload-revision', compact('submission'));
     }
 
-    public function storeRevision(Request $request, $id)
+    public function updateRevision(Request $request, $id)
     {
-        $submission = \App\Models\Submission::findOrFail($id);
-        
-        // 1. SATPAM IDENTITAS (ANTI-IDOR)
-        // Pastikan yang nge-submit adalah Author pemilik naskah itu sendiri
-        if ($submission->author_id !== auth()->id()) {
-            abort(403, 'Akses Ditolak! Anda bukan pemilik naskah ini.');
-        }
+        $submission = \App\Models\Submission::where('id', $id)
+                        ->where('author_id', auth()->id())
+                        ->firstOrFail();
 
-        // 2. SATPAM STATUS (ANTI-ZOMBIE)
-        // Pastikan hanya naskah yang berstatus "Butuh Revisi" yang bisa diubah
+        // 1. SATPAM STATUS
         if ($submission->status->value !== 'revision_required') {
             abort(403, 'Akses Ditolak! Naskah ini tidak sedang dalam masa revisi.');
         }
 
+        // 2. VALIDASI SEMUA INPUT
         $request->validate([
-            'revised_file' => 'required|mimes:pdf,doc,docx|max:10240', // Max 10MB
+            'title' => 'required|string',
+            'abstract' => 'required|string',
+            'keywords' => 'required|string',
+            'co_authors' => 'nullable|array',
+            'manuscript_file' => 'nullable|mimes:pdf,doc,docx|max:10240', 
         ]);
 
-        // 3. BERSIH-BERSIH FILE LAMA (Pencegah Hardisk Penuh)
-        // Hapus file naskah ronde sebelumnya sebelum menyimpan yang baru
-        if ($submission->manuscript_file && \Illuminate\Support\Facades\Storage::disk('local')->exists($submission->manuscript_file)) {
-            \Illuminate\Support\Facades\Storage::disk('local')->delete($submission->manuscript_file);
+        // 3. BERSIHKAN CO-AUTHORS KOSONG
+        $coAuthors = null;
+        if ($request->filled('co_authors')) {
+            $coAuthors = array_filter($request->co_authors, function($author) {
+                return !empty($author['name']) && !empty($author['email']); 
+            });
         }
 
-        // 4. SIMPAN FILE REVISI BARU
-        $path = $request->file('revised_file')->store('submissions', 'local');
+        // 4. HANDLE FILE (FIX 404: Pake disk 'local' dan folder 'submissions'!)
+        if ($request->hasFile('manuscript_file')) {
+            // Hapus file lama di local
+            if ($submission->manuscript_file && Storage::disk('local')->exists($submission->manuscript_file)) {
+                Storage::disk('local')->delete($submission->manuscript_file);
+            }
+            // Simpan file baru di local
+            $path = $request->file('manuscript_file')->store('submissions', 'local');
+            $submission->manuscript_file = $path;
+        }
 
-        // 5. UPDATE DATABASE
+        // 5. UPDATE SEMUA DATA
         $submission->update([
-            'manuscript_file' => $path,
-            'status' => \App\Enums\SubmissionStatus::UNDER_REVIEW, // Lempar kembali ke antrean Manager
-            'current_round' => $submission->current_round + 1, // Naik ronde!
+            'title' => $request->title,
+            'abstract' => $request->abstract,
+            'keywords' => $request->keywords,
+            'co_authors' => empty($coAuthors) ? null : array_values($coAuthors),
+            'status' => \App\Enums\SubmissionStatus::UNDER_REVIEW, // Lempar ke Manager
+            'current_round' => $submission->current_round + 1, // Naik ronde
         ]);
 
         return redirect()->route('author.dashboard')->with('success', 'Revised manuscript has been uploaded. Round ' . $submission->current_round . ' starts now.');

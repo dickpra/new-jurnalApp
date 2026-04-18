@@ -12,6 +12,10 @@ enum SubmissionStatus: string implements HasLabel, HasColor
     case REVISION_REQUIRED = 'revision_required';
     case ACCEPTED = 'accepted';
     case REJECTED = 'rejected';
+    case UNPAID = 'unpaid';
+    case PENDING_PAYMENT = 'pending_payment';
+    case PAID = 'paid';
+    case PUBLISHED = 'published';
 
     public function getLabel(): ?string
     {
@@ -21,6 +25,10 @@ enum SubmissionStatus: string implements HasLabel, HasColor
             self::REVISION_REQUIRED => 'Revision Required',
             self::ACCEPTED => 'Accepted (Waiting for Payment)',
             self::REJECTED => 'Rejected',
+            self::PAID => 'Accepted (Payment Received)',
+            self::PENDING_PAYMENT => 'Pending Payment',
+            self::UNPAID => 'Unpaid',
+            self::PUBLISHED => 'Published',
         };
     }
 
@@ -32,6 +40,8 @@ enum SubmissionStatus: string implements HasLabel, HasColor
             self::REVISION_REQUIRED => 'warning',
             self::ACCEPTED => 'success',
             self::REJECTED => 'danger',
+            self::PAID => 'success',
+            self::PUBLISHED => 'success',
         };
     }
 }

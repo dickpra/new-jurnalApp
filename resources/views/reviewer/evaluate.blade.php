@@ -28,6 +28,62 @@
                 </div>
             </div>
 
+            <div class="bg-white shadow-sm border border-stone-200 p-8 md:p-10 mb-8">
+                <div class="flex flex-col md:flex-row justify-between items-start mb-6 border-b border-stone-100 pb-6 gap-8">
+                    <div class="w-full md:w-2/3">
+                        <p class="text-xs text-stone-500 uppercase tracking-widest mb-1">Authors</p>
+                        @php
+                            $authors = [];
+                            if (!empty($review->submission->co_authors)) {
+                                if (is_array($review->submission->co_authors)) {
+                                    $authors = $review->submission->co_authors;
+                                } else {
+                                    $authors = json_decode($review->submission->co_authors, true) ?? [];
+                                }
+                            }
+                        @endphp
+                        @if(count($authors) > 0)
+                            <ul class="list-disc pl-5 space-y-1">
+                                @foreach($authors as $author)
+                                    <li class="text-stone-700 text-sm">
+                                        <span class="font-medium">{{ $author['name'] ?? '' }}</span>
+                                        @if(!empty($author['email']))
+                                            <span class="text-stone-500">&lt;{{ $author['email'] }}&gt;</span>
+                                        @endif
+                                    </li>
+                                @endforeach
+                            </ul>
+                        @else
+                            <span class="text-stone-500 text-sm italic">No author data available.</span>
+                        @endif
+                    </div>
+                    <div class="w-full md:w-1/3 mt-6 md:mt-0">
+                        <p class="text-xs text-stone-500 uppercase tracking-widest mb-1">Keywords</p>
+                        @php
+                            $keywords = [];
+                            if (!empty($review->submission->keywords)) {
+                                if (is_array($review->submission->keywords)) {
+                                    $keywords = $review->submission->keywords;
+                                } else {
+                                    $keywords = explode(',', $review->submission->keywords);
+                                }
+                                $keywords = array_map('trim', $keywords);
+                                $keywords = array_filter($keywords);
+                            }
+                        @endphp
+                        @if(count($keywords) > 0)
+                            <div class="flex flex-wrap gap-2">
+                                @foreach($keywords as $keyword)
+                                    <span class="inline-block bg-stone-100 text-stone-800 text-xs px-3 py-1 rounded-full font-serif">{{ $keyword }}</span>
+                                @endforeach
+                            </div>
+                        @else
+                            <span class="text-stone-500 text-sm italic">No keywords available.</span>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white shadow-sm border border-stone-200 p-8 md:p-10">
                 <h2 class="text-xl font-serif text-stone-900 font-bold mb-6 border-b border-stone-100 pb-4">Evaluation Form</h2>
                 

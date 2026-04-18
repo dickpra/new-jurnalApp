@@ -75,7 +75,7 @@ class SubmissionResource extends Resource
                             fn ($query) => $query->where('journal_theme_id', Filament::getTenant()->id)
                         )
                         ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->volume} {$record->issue} ({$record->year})")
-                        ->disabled(fn ($record) => $record?->status?->value !== 'accepted') // Cuma bisa diisi kalau naskah Diterima
+                        ->disabled(fn ($record) => $record?->status?->value !== 'accepted' && $record?->status?->value !== 'paid') // Cuma bisa diisi kalau naskah Diterima
                         ->helperText('Pilih naskah ini akan diterbitkan di volume berapa.'),
 
                         Textarea::make('abstract')
@@ -110,7 +110,9 @@ class SubmissionResource extends Resource
                             ->numeric()
                             ->disabled()
                             ->dehydrated(false),
+
                     ])->columns(2),
+
                     Select::make('payment_status')
                         ->label('Status Pembayaran')
                         ->options([
@@ -118,8 +120,23 @@ class SubmissionResource extends Resource
                             'pending_verification' => 'Menunggu Verifikasi',
                             'paid' => 'Lunas (Paid)',
                         ])
-                        ->disabled(fn ($record) => $record?->status?->value !== 'accepted')
-                        ->native(false),
+                        // Hanya bisa diubah jika status naskah sudah 'accepted'
+                        ->disabled(fn ($record) => $record?->status?->value !== 'accepted' && $record?->status?->value !== 'paid')
+                        ->native(false)
+                        ->afterStateUpdated(function ($state, $record, $set) {
+                            // Jika dipilih 'paid', langsung update ke database
+                            if ($state === 'paid' && $record) {
+                                $record->update([
+                                    'status' => 'paid',
+                                ]);
+                            }if ($state === 'unpaid' && $record) {
+                                $record->update([
+                                    'status' => 'accepted',
+                                ]);
+                            }
+                            return redirect(request()->header('Referer'));
+                        }),
+
                 Forms\Components\FileUpload::make('loa_file')
                             ->label('Custom LOA File (Opsional)')
                             ->directory('loas')
@@ -135,7 +152,7 @@ class SubmissionResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('title')
-                    ->label('Manuscript Title')
+                    ->label('Journal Title')
                     ->wrap()
                     ->description(fn ($record) => "Author: " . ($record->author->name ?? 'Unknown')),
                 
@@ -148,6 +165,7 @@ class SubmissionResource extends Resource
                     ->label('Status')
                     ->badge(), // Filament otomatis ambil warna dari Enum SubmissionStatus
 
+                    
                 TextColumn::make('current_round')
                     ->label('Round')
                     ->formatStateUsing(fn ($state) => "Round " . $state),
@@ -159,6 +177,46 @@ class SubmissionResource extends Resource
                     ->icon('heroicon-o-arrow-down-tray')
                     ->color('success')
                     ->action(fn (Submission $record) => Storage::disk('local')->download($record->manuscript_file)),
+                
+                Action::make('publish_paper')
+                    ->label('Publish Paper')
+                    ->icon('heroicon-o-megaphone')
+                    ->color('primary')
+                    // Syarat: Sudah Diterima, Sudah Lunas, dan Belum Terbit
+                    ->visible(fn ($record) => 
+                        $record->status->value === 'paid' && 
+                        $record->payment_status === 'paid'
+                    )
+                    ->form([
+                        Forms\Components\Select::make('journal_issue_id')
+                            ->label('Select Volume / Issue')
+                            ->options(fn () => \App\Models\JournalIssue::where('journal_theme_id', \Filament\Facades\Filament::getTenant()->id)
+                                ->get()
+                                ->mapWithKeys(fn ($issue) => [$issue->id => "{$issue->volume} No. {$issue->issue} ({$issue->year})"]))
+                            ->required()
+                            ->helperText('Pilih ke dalam volume mana naskah ini akan diterbitkan.'),
+                        Forms\Components\TextInput::make('doi')
+                            ->label('Digital Object Identifier (DOI)')
+                            ->placeholder('e.g., 10.1234/agromix.v1i1.123')
+                            ->helperText('Masukkan nomor DOI resmi untuk paper ini.'),
+                    ])
+                    ->action(function ($record, array $data) {
+                        // 1. Update Status dan Hubungkan ke Issue
+                        $record->update([
+                            'status' => \App\Enums\SubmissionStatus::PUBLISHED,
+                            'journal_issue_id' => $data['journal_issue_id'],
+                            'doi' => $data['doi'],
+                        ]);
+
+                        // 2. Kirim Email Selamat ke Author
+                        $mailable = new \App\Mail\PaperPublishedNotification($record, "Congratulations! Your research is now officially published and accessible through our digital library.");
+                        \App\Jobs\SendEmailJob::dispatch($record->author->email, $mailable);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Paper Published Successfully!')
+                            ->success()
+                            ->send();
+                    }),
 
                 // 2. TOMBOL REQUEST REVISION (Ini yang kamu cari!)
                 Action::make('request_revision')
@@ -196,9 +254,40 @@ class SubmissionResource extends Resource
                     ->visible(fn (Submission $record) => $record->payment_proof !== null)
                     ->action(fn (Submission $record) => Storage::disk('local')->download($record->payment_proof)),
 
+                Action::make('confirm_payment')
+                    ->label('Verify & Confirm Payment')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    // Tombol hanya muncul jika sudah Accepted DAN pembayaran sedang menunggu verifikasi
+                    ->visible(fn ($record) => 
+                        $record->status->value === 'accepted' && 
+                        ($record->payment_status === 'unpaid' || $record->payment_status === 'pending_verification')
+                    )
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirm Author Payment?')
+                    ->modalDescription('By confirming, the status will change to PAID, and an official confirmation email will be sent to the author.')
+                    ->action(function ($record) {
+                        // 1. Update Status Pembayaran
+                        $record->update([
+                            'payment_status' => 'paid',
+                        ]);
+
+                        // 2. Draft Pesan Email
+                        $pesan = "Thank you for completing the registration payment. Your Letter of Acceptance (LOA) is now available for download in your dashboard.";
+
+                        // 3. Kirim Email via Job (Background)
+                        $mailable = new \App\Mail\PaymentConfirmedNotification($record, $pesan);
+                        \App\Jobs\SendEmailJob::dispatch($record->author->email, $mailable);
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Payment Verified Successfully')
+                            ->success()
+                            ->send();
+                    }),
+
                 // 3. Tombol View & Edit Bawaan
                 ViewAction::make(),
-                EditAction::make()->label('Process'),
+                // EditAction::make()->label('Process'),
             ]);
     }
 

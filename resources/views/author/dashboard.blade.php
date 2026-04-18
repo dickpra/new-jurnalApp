@@ -23,7 +23,7 @@
                 </div>
                 <div class="bg-white p-5 border border-stone-200 border-l-4 border-l-green-500 shadow-sm">
                     <p class="text-xs uppercase tracking-widest text-stone-500 mb-1">Accepted</p>
-                    <p class="text-2xl font-serif font-bold">{{ $submissions->where('status.value', 'accepted')->count() }}</p>
+                    <p class="text-2xl font-serif font-bold">{{ $submissions->where('status.value', 'accepted' || 'paid')->count() }}</p>
                 </div>
             </div>
 
@@ -56,6 +56,7 @@
                             'revision_required' => 'bg-amber-600',
                             'rejected' => 'bg-red-600',
                             'under_review' => 'bg-blue-600',
+                            'paid' => 'bg-green-600',
                             default => 'bg-stone-600',
                         };
                     @endphp

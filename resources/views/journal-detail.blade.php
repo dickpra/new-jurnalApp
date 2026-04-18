@@ -77,15 +77,20 @@
                         </div>
                     </div>
 
-                    <div class="mt-12 text-center">
+                    <div class="mt-12 text-center flex flex-col md:flex-row justify-center items-center gap-4">
                         <a href="{{ route('author.submit', $journalTheme->slug) }}" 
-                           class="inline-block w-full md:w-auto px-10 py-4 bg-stone-800 text-white font-serif text-lg tracking-wider hover:bg-stone-700 transition shadow-md">
+                           class="inline-block w-full md:w-auto px-10 py-4 bg-stone-800 text-white font-serif text-sm font-bold tracking-wider hover:bg-stone-700 transition shadow-md">
                             KIRIM NASKAH (SUBMIT MANUSCRIPT)
                         </a>
-                        @guest
-                            <p class="text-xs text-red-500 mt-4 italic">Anda harus masuk (login) terlebih dahulu sebelum menekan tombol di atas.</p>
-                        @endguest
+                        
+                        <a href="{{ route('journal.archive', $journalTheme->slug) }}" 
+                           class="inline-block w-full md:w-auto px-10 py-4 bg-white border-2 border-stone-800 text-stone-800 font-serif text-sm font-bold tracking-wider hover:bg-stone-50 transition shadow-sm">
+                            LIHAT ARSIP (VIEW ARCHIVES)
+                        </a>
                     </div>
+                    @guest
+                        <p class="text-xs text-red-500 mt-4 italic text-center">Anda harus masuk (login) terlebih dahulu sebelum menekan tombol submit.</p>
+                    @endguest
                 </div>
             </div>
         </div>

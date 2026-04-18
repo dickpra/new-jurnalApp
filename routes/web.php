@@ -4,7 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\PageController;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\JournalController;
 
 // ==========================================
 // 2. JEMBATAN LOGIN BREEZE
@@ -117,5 +117,14 @@ Route::middleware(['auth', 'verified'])->prefix('reviewer')->name('reviewer.')->
         return response()->file(storage_path('app/' . $path));
         
     })->name('secure.file');
+
+// 1. Landing Page Jurnal
+Route::get('/journal/{slug}', [JournalController::class, 'show'])->name('journal.show');
+
+// 2. Daftar Archive (Grid Sampul)
+Route::get('/journal/{slug}/archive', [JournalController::class, 'archive'])->name('journal.archive');
+
+// 3. Detail Isi Volume (Daftar Paper)
+Route::get('/journal/{slug}/issue/{issue_id}', [JournalController::class, 'issueDetail'])->name('journal.issue.detail');
 
 require __DIR__.'/auth.php';

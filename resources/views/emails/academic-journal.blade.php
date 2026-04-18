@@ -44,6 +44,7 @@
         .status-accepted { color: #15803d; }
         .status-rejected { color: #b91c1c; }
         .status-revision { color: #b45309; }
+        .status-paid { color: #047857; } /* Hijau Emerald */
 
         .content { line-height: 1.8; font-size: 16px; text-align: justify; }
         
@@ -117,7 +118,8 @@
         </div>
         
         <div class="footer">
-            &copy; {{ date('Y') }} {{ $submission->journalTheme->name }}. All rights reserved.<br>
+            {{-- &copy; {{ date('Y') }} {{ $submission->journalTheme->name }}. All rights reserved.<br> --}}
+            &copy; {{ date('Y') }} SustainSUN. All rights reserved.<br>
             This is an automated notification. Please do not reply to this email.
         </div>
     </div>

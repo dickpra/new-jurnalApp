@@ -82,7 +82,7 @@ class ReviewsRelationManager extends RelationManager
                     ->label('Assign New Reviewer')
                     ->icon('heroicon-o-user-plus')
                     // FIX LOGIC 1: Sembunyikan tombol kalau naskah sudah Tamat (Accepted/Rejected)
-                    ->visible(fn (RelationManager $livewire) => !in_array($livewire->getOwnerRecord()->status->value, ['accepted', 'rejected']))
+                    ->visible(fn (RelationManager $livewire) => !in_array($livewire->getOwnerRecord()->status->value, ['accepted', 'rejected', 'paid']))
                     ->after(function ($record) {
                         $record->submission->update([
                             'status' => SubmissionStatus::UNDER_REVIEW

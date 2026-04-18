@@ -18,6 +18,7 @@
                 @php
                     $headerColor = match($submission->status->value) {
                         'accepted' => 'bg-green-700',
+                        'paid' => 'bg-green-700',
                         'rejected' => 'bg-red-700',
                         'revision_required' => 'bg-amber-600',
                         default => 'bg-stone-900',
@@ -78,7 +79,7 @@
                     </div>
                 </div>
 
-            @elseif($submission->status->value === 'accepted')
+            @elseif($submission->status->value === 'accepted' || $submission->status->value === 'paid')
                 
                 <div class="bg-white shadow-sm border border-green-200 mb-8">
                     <div class="bg-green-50 px-8 py-4 border-b border-green-100">

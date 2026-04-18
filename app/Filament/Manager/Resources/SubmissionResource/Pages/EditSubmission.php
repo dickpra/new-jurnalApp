@@ -34,6 +34,31 @@ class EditSubmission extends EditRecord
                 ->url(fn ($record) => route('secure.file', encrypt(['id' => $record->id, 'type' => 'payment'])))
                 ->openUrlInNewTab(),
 
+            Actions\Action::make('verify_payment_header')
+            ->label('Verify Payment')
+            ->icon('heroicon-o-check-badge')
+            ->color('success')
+            ->visible(fn ($record) => 
+                $record->status->value === 'accepted' && 
+                ($record->payment_status === 'pending_verification' || $record->payment_status === 'unpaid')
+            )
+            ->requiresConfirmation()
+            ->action(function ($record) {
+                $record->update(['payment_status' => 'paid']);
+                $record->update(['status' => SubmissionStatus::PAID]);
+
+                $mailable = new \App\Mail\PaymentConfirmedNotification($record, "Payment verified. Official documents are now available.");
+                \App\Jobs\SendEmailJob::dispatch($record->author->email, $mailable);
+
+                \Filament\Notifications\Notification::make()
+                    ->title('Pembayaran Terverifikasi')
+                    ->success()
+                    ->send();
+                
+                // Refresh halaman agar status berubah di layar
+                return redirect(request()->header('Referer'));
+            }),
+
             // ==========================================
             // TOMBOL KEPUTUSAN (DENGAN CUSTOM EMAIL & BACKGROUND JOB)
             // ==========================================
@@ -43,7 +68,7 @@ class EditSubmission extends EditRecord
                 ->label('Accept Submission')
                 ->icon('heroicon-o-check-circle')
                 ->color('success')
-                ->visible(fn ($record) => !in_array($record->status->value, ['accepted', 'rejected']))
+                ->visible(fn ($record) => !in_array($record->status->value, ['accepted', 'rejected', 'paid']))
                 ->mountUsing(function (Form $form, $record) {
                     $draft = "The editorial board is impressed with the quality of your work. We believe it makes a significant contribution to the field.";
                     $form->fill(['custom_email' => $draft]);
@@ -67,7 +92,7 @@ class EditSubmission extends EditRecord
                 ->label('Reject Submission')
                 ->icon('heroicon-o-x-circle')
                 ->color('danger')
-                ->visible(fn ($record) => !in_array($record->status->value, ['accepted', 'rejected']))
+                ->visible(fn ($record) => !in_array($record->status->value, ['accepted', 'rejected', 'paid']))
                 ->mountUsing(function (Form $form, $record) {
                     // SEKARANG DRAFT-NYA CUKUP ALASAN SPESIFIKNYA SAJA (Karena template awalnya sudah ada di Blade)
                     $draft = "Unfortunately, your manuscript does not fit the scope of our current issue.\n";

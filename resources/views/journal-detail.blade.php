@@ -58,8 +58,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-slate-200">
                         
-                        <!-- APC Info -->
-                        <div>
+                        <!-- <div>
                             <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-l-2 border-indigo-600 pl-3">Publication Fees (APC)</h3>
                             <ul class="space-y-3 text-sm text-slate-600 ml-3">
                                 <li class="flex justify-between items-center border-b border-slate-100 pb-2">
@@ -71,15 +70,47 @@
                                     <span class="font-bold text-slate-900">USD {{ number_format($journalTheme->listener_fee_usd ?? 0, 2) }}</span>
                                 </li>
                             </ul>
-                        </div>
+                        </div> -->
 
-                        <!-- Bank Info -->
                         <div>
-                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-l-2 border-indigo-600 pl-3">Payment Bank Details</h3>
-                            <div class="space-y-3 text-sm text-slate-600 ml-3">
-                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Bank Name</span> {{ $journalTheme->bank_name ?? '-' }}</div>
-                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Account Number</span> <span class="font-mono text-slate-900 font-medium">{{ $journalTheme->account_number ?? '-' }}</span></div>
-                                <div><span class="block text-xs font-bold text-slate-400 uppercase">Beneficiary Name</span> {{ $journalTheme->account_owner_name ?? '-' }}</div>
+                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 border-l-2 border-indigo-600 pl-3">Current Issue</h3>
+                            
+                            @php
+                                // Mengambil edisi terbaru yang memiliki naskah berstatus PUBLISHED
+                                $currentIssue = \App\Models\JournalIssue::where('journal_theme_id', $journalTheme->id)
+                                    ->where('is_active', true)
+                                    ->whereHas('submissions', function($query) {
+                                        $query->where('status', \App\Enums\SubmissionStatus::PUBLISHED);
+                                    })
+                                    ->orderBy('year', 'desc')
+                                    ->orderBy('id', 'desc')
+                                    ->first();
+                            @endphp
+
+                            <div class="space-y-2 text-sm text-slate-600 ml-3">
+                                @if($currentIssue)
+                                    <a href="{{ route('journal.issue.detail', [$journalTheme->slug, $currentIssue->id]) }}" class="group block">
+                                        <div class="font-serif text-lg font-bold text-slate-900 group-hover:text-indigo-700 transition">
+                                            Vol. {{ $currentIssue->volume }} No. {{ $currentIssue->issue }} ({{ $currentIssue->year }})
+                                        </div>
+                                    </a>
+                                    
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-bold text-slate-500 uppercase text-[10px] tracking-widest">Published:</span> 
+                                        <span>{{ $currentIssue->created_at->format('Y-m-d') }}</span>
+                                    </div>
+                                    
+                                    <div class="mt-4 pt-3 border-t border-slate-100">
+                                        <a href="{{ route('journal.issue.detail', [$journalTheme->slug, $currentIssue->id]) }}" class="text-indigo-600 hover:text-indigo-800 font-bold text-xs uppercase tracking-widest transition inline-flex items-center gap-1">
+                                            View Articles in this Issue 
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        </a>
+                                    </div>
+                                @else
+                                    <div class="italic text-slate-400 border border-dashed border-slate-200 p-4 text-center bg-slate-50">
+                                        No published issues available yet.
+                                    </div>
+                                @endif
                             </div>
                         </div>
 
@@ -88,12 +119,12 @@
                     <div class="mt-12 pt-8 border-t border-slate-100 flex flex-col sm:flex-row gap-4">
                         <a href="{{ route('author.submit', $journalTheme->slug) }}" 
                            class="flex justify-center items-center px-6 py-3 bg-indigo-700 text-white font-bold text-sm rounded cursor-pointer hover:bg-indigo-800 transition">
-                            Submit Manuscript
+                            Submit Paper
                         </a>
                         
                         <a href="{{ route('journal.archive', $journalTheme->slug) }}" 
                            class="flex justify-center items-center px-6 py-3 bg-white border border-slate-300 text-slate-700 font-bold text-sm rounded cursor-pointer hover:bg-slate-50 transition">
-                            View Archives
+                            View All Archives
                         </a>
                     </div>
                     

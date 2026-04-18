@@ -40,7 +40,7 @@ class ReviewsRelationManager extends RelationManager
                         }
                     )
                     ->validationMessages([
-                        'unique' => 'Reviewer ini sudah ditugaskan untuk menilai di ronde ini!',
+                        'unique' => 'This reviewer has been assigned to review this submission in this round!',
                     ]),
                 
                 Forms\Components\Select::make('round')
@@ -82,7 +82,7 @@ class ReviewsRelationManager extends RelationManager
                     ->label('Assign New Reviewer')
                     ->icon('heroicon-o-user-plus')
                     // FIX LOGIC 1: Sembunyikan tombol kalau naskah sudah Tamat (Accepted/Rejected)
-                    ->visible(fn (RelationManager $livewire) => !in_array($livewire->getOwnerRecord()->status->value, ['accepted', 'rejected', 'paid']))
+                    ->visible(fn (RelationManager $livewire) => !in_array($livewire->getOwnerRecord()->status->value, ['accepted', 'rejected', 'paid', 'published']))
                     ->after(function ($record) {
                         $record->submission->update([
                             'status' => SubmissionStatus::UNDER_REVIEW

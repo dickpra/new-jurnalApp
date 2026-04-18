@@ -13,7 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Facades\Filament;
-
+use App\Filament\Manager\Resources\JournalIssueResource\RelationManagers\SubmissionsRelationManager;
 
 class JournalIssueResource extends Resource
 {
@@ -22,12 +22,21 @@ class JournalIssueResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static bool $isScopedToTenant = false;
+    protected static ?string $navigationLabel = 'Journal Issues Volume';
 
     public static function getEloquentQuery(): Builder
     {
         // FIX LOGIKA FATAL: Sebelumnya kamu pakai 'id', padahal seharusnya 'journal_theme_id'
         // Kalau pakai 'id', Manager tidak akan pernah melihat Volume yang dia buat!
         return parent::getEloquentQuery()->where('journal_theme_id', Filament::getTenant()->id);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            // Tambahkan baris ini:
+            RelationManagers\SubmissionsRelationManager::class,
+        ];
     }
 
 
@@ -87,13 +96,6 @@ class JournalIssueResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

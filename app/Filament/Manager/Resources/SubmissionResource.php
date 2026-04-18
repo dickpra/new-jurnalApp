@@ -67,7 +67,7 @@ class SubmissionResource extends Resource
 
                         Placeholder::make('theme_info')
                             ->label('Tema Jurnal')
-                            ->content(fn ($record) => new HtmlString('<span style="color: #0369a1; font-weight: bold;">📚 ' . ($record?->journalTheme?->name ?? 'Tidak diketahui') . '</span>')),
+                            ->content(fn ($record) => new HtmlString('<span style="color: #0369a1; font-weight: bold;">' . ($record?->journalTheme?->name ?? 'Tidak diketahui') . '</span>')),
 
                         // DAFTAR PENULIS DENGAN BADGE WARNA-WARNI
                         Placeholder::make('co_authors_view')
@@ -99,6 +99,55 @@ class SubmissionResource extends Resource
                             ->getOptionLabelFromRecordUsing(fn ($record) => "{$record->volume} {$record->issue} ({$record->year})")
                             ->disabled(fn ($record) => !in_array($record?->status?->value, ['accepted', 'paid'])) 
                             ->helperText('Pilih naskah ini akan diterbitkan di volume berapa.'),
+                        
+                        Placeholder::make('publish_status')
+                            ->label('Status Publish')
+                            ->content(function ($record) {
+                                $isPublished = $record?->status?->value === 'published';
+
+                                return new HtmlString(
+                                    '<span style="
+                                        background-color:' . ($isPublished ? '#dcfce7' : '#fef3c7') . ';
+                                        color:' . ($isPublished ? '#166534' : '#92400e') . ';
+                                        padding: 4px 12px;
+                                        border-radius: 999px;
+                                        font-weight: 600;
+                                        font-size: 0.75rem;
+                                        letter-spacing: 0.5px;
+                                        display: inline-block;
+                                    ">
+                                        ' . ($isPublished ? '✅ Published' : '⏳ Not Published') . '
+                                    </span>'
+                                );
+                            })
+                            ->columnSpanFull(),
+
+                        Placeholder::make('doi')
+                            ->label('DOI')
+                            ->visible(fn ($record) => $record?->status?->value === 'published') // 🔥 hanya muncul kalau published
+                            ->content(function ($record) {
+                                $doi = $record->doi ?? '#';
+
+                                return new HtmlString(
+                                    '<a href="https://doi.org/' . $doi . '" target="_blank"
+                                        style="
+                                            background-color:#ecfeff;
+                                            color:#155e75;
+                                            padding: 6px 14px;
+                                            border-radius: 999px;
+                                            font-weight: 600;
+                                            font-size: 0.75rem;
+                                            text-decoration: none;
+                                            display: inline-block;
+                                        "
+                                        onmouseover="this.style.backgroundColor=\'#cffafe\'"
+                                        onmouseout="this.style.backgroundColor=\'#ecfeff\'"
+                                    >
+                                        🔗 https://doi.org/' . $doi . '
+                                    </a>'
+                                );
+                            })
+                            ->columnSpanFull(),
                     ])->columns(2),
 
                 Section::make('Kontrol Manajer')
@@ -122,7 +171,7 @@ class SubmissionResource extends Resource
                                 'pending_verification' => 'Waiting Verification',
                                 'paid' => 'Paid',
                             ])
-                            ->disabled(fn ($record) => !in_array($record?->status?->value, ['accepted', 'paid']))
+                            ->disabled(fn ($record) => !in_array($record?->status?->value, ['accepted', 'paid', 'published']))
                             ->native(false)
                             ->afterStateUpdated(function ($state, $record, $set) {
                                 if ($state === 'paid' && $record) {

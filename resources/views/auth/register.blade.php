@@ -21,6 +21,18 @@
             <x-input-error :messages="$errors->get('email')" class="mt-2 text-rose-500" />
         </div>
 
+        <div class="mt-4">
+            <x-input-label for="country" :value="__('Country')" />
+            <select id="country" name="country" class="block mt-1 w-full border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
+                <option value="" disabled selected>Select Country...</option>
+
+                @foreach(config('countries', []) as $country)
+                    <option value="{{ $country }}">{{ $country }}</option>
+                @endforeach
+            </select>
+            <x-input-error :messages="$errors->get('country')" class="mt-2" />
+        </div>
+
         <!-- Password -->
         <div class="mt-5">
             <label for="password" class="block font-semibold text-sm text-slate-700 mb-1">Password</label>

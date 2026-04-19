@@ -17,9 +17,11 @@ class User extends Authenticatable implements FilamentUser, HasTenants, MustVeri
 {
     use HasFactory, Notifiable;
 
-    protected $fillable = [
-        'name', 'email', 'password', 'is_super_admin', // Tambahkan boolean ini di migration users jika belum
-    ];
+    // protected $fillable = [
+    //     'name', 'email', 'password', 'is_super_admin', // Tambahkan boolean ini di migration users jika belum
+    // ];
+
+    protected $guarded = [];
 
     protected $hidden = [
         'password', 'remember_token',

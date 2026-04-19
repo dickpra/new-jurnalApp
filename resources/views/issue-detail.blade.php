@@ -89,9 +89,11 @@
                     <div class="bg-white p-6 md:p-8 shadow-sm border border-slate-200 flex flex-col md:flex-row gap-6 items-start rounded-sm hover:border-indigo-300 transition">
 
                         <div class="flex-grow w-full">
-                            <h3 class="text-xl font-serif font-bold text-slate-900 mb-2 leading-snug">
-                                {{ $paper->title }}
-                            </h3>
+                            <a href="{{ route('journal.article.detail', [$journalTheme->slug, $paper->id]) }}">
+                                <h3 class="text-xl font-serif font-bold text-stone-900 mb-3 leading-snug group-hover:text-blue-700 transition">
+                                    {{ $paper->title }}
+                                </h3>
+                            </a>
                             
                             <p class="text-sm text-slate-600 mb-4 bg-slate-50 inline-block px-3 py-1 rounded">
                                 <span class="font-bold text-slate-800">{{ $paper->author->name }}</span>

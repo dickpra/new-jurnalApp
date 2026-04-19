@@ -128,4 +128,7 @@ Route::get('/journal/{slug}/archive', [JournalController::class, 'archive'])->na
 // 3. Detail Isi Volume (Daftar Paper)
 Route::get('/journal/{slug}/issue/{issue_id}', [JournalController::class, 'issueDetail'])->name('journal.issue.detail');
 
+// Halaman Detail Artikel (Paper)
+Route::get('/journal/{slug}/article/{id}', [App\Http\Controllers\JournalController::class, 'articleDetail'])->name('journal.article.detail');
+
 require __DIR__.'/auth.php';

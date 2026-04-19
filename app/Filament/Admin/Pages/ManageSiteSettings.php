@@ -33,10 +33,10 @@ class ManageSiteSettings extends Page implements HasForms
         $settings = SiteSetting::firstOrCreate(
             ['id' => 1], 
             [
-                'site_name' => 'AGROMIX Journal',
-                'hero_title' => 'Scientific Journal Platform of Yudharta University',
-                'hero_subtitle' => 'Platform publikasi ilmiah terpadu untuk mendesiminasikan hasil penelitian.',
-                'contact_email' => 'admin@yudharta.ac.id'
+                'site_name' => 'SustainScript',
+                'hero_title' => 'Scientific Journal Platform of SustainScript',
+                'hero_subtitle' => 'Publication Platform for Scientific Journals',
+                'contact_email' => 'admin@sustainscript.org'
             ]
         );
         

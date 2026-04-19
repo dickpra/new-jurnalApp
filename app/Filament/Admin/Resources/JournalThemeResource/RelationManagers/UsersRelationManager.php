@@ -62,7 +62,7 @@ class UsersRelationManager extends RelationManager
                             ->label('Pilih Peran')
                             ->options([
                                 'manager' => 'Pengelola Jurnal',
-                                'reviewer' => 'Reviewer',
+                                // 'reviewer' => 'Reviewer',
                             ])
                             ->required(),
                     ]),

@@ -12,16 +12,17 @@ use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Section;
-use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Filament\Facades\Filament;
 use Illuminate\Database\Eloquent\Builder;
-
 
 class JournalThemeResource extends Resource
 {
     protected static ?string $model = JournalTheme::class;
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
-    protected static ?string $navigationLabel = 'Conference Settings';
+    // Label diganti agar lebih mencerminkan Jurnal
+    protected static ?string $navigationLabel = 'Journal Settings';
     protected static ?string $pluralLabel = 'Journal Settings';
 
     // 1. KUNCI UTAMA FIX ERROR: Matikan otomatisasi tenant untuk resource ini
@@ -30,8 +31,8 @@ class JournalThemeResource extends Resource
     public static function canCreate(): bool
     {
         return false;
-
     }
+    
     public static function canDelete($record): bool
     {
         return false;
@@ -49,7 +50,7 @@ class JournalThemeResource extends Resource
             ->schema([
                 Tabs::make('Settings')
                     ->tabs([
-                        // TAB 1: GENERAL INFO
+                        // TAB 1: GENERAL INFO (Ditambah Logo & Cover)
                         Tabs\Tab::make('General Information')
                             ->icon('heroicon-o-information-circle')
                             ->schema([
@@ -59,13 +60,63 @@ class JournalThemeResource extends Resource
                                 TextInput::make('slug')
                                     ->disabled() // Slug biasanya diatur Super Admin
                                     ->label('URL Slug'),
-                                Textarea::make('description')
+                                FileUpload::make('journal_logo')
+                                    ->label('Journal Logo')
+                                    ->image()
+                                    ->directory('journals'),
+                                FileUpload::make('default_cover_image')
+                                    ->label('Default Cover Image')
+                                    ->image()
+                                    ->directory('journals'),
+                                RichEditor::make('description')
+                                    ->label('Short Description')
                                     ->required()
-                                    ->rows(5)
                                     ->columnSpanFull(),
-                            ]),
+                            ])->columns(2),
 
-                        // TAB 2: PAYMENT & BANK (Sesuai Permintaan)
+                        // TAB 2: ACADEMIC IDENTITY & POLICIES (Baru)
+                        Tabs\Tab::make('Academic Identity')
+                            ->icon('heroicon-o-academic-cap')
+                            ->schema([
+                                TextInput::make('publisher')
+                                    ->label('Publisher / Institution')
+                                    ->placeholder('e.g., Faculty of Agriculture, Yudharta University'),
+                                TextInput::make('accreditation_status')
+                                    ->label('Accreditation Status')
+                                    ->placeholder('e.g., SINTA 2, Scopus Q3'),
+                                TextInput::make('e_issn')
+                                    ->label('e-ISSN (Online)'),
+                                TextInput::make('p_issn')
+                                    ->label('p-ISSN (Print)'),
+                                TextInput::make('publication_frequency')
+                                    ->label('Publication Frequency')
+                                    ->placeholder('e.g., Biannually (June & December)'),
+                                
+                                RichEditor::make('focus_scope')
+                                    ->label('Focus and Scope')
+                                    ->columnSpanFull(),
+                                Textarea::make('peer_review_process')
+                                    ->label('Peer Review Process')
+                                    ->rows(4)
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+
+                        // TAB 3: EDITORIAL CONTACT (Baru)
+                        Tabs\Tab::make('Editorial Contact')
+                            ->icon('heroicon-o-envelope')
+                            ->schema([
+                                TextInput::make('principal_contact_name')
+                                    ->label('Principal Contact (Chief Editor)'),
+                                TextInput::make('support_email')
+                                    ->label('Official Support Email')
+                                    ->email(),
+                                Textarea::make('mailing_address')
+                                    ->label('Editorial Office Address')
+                                    ->rows(3)
+                                    ->columnSpanFull(),
+                            ])->columns(2),
+
+                        // TAB 4: PAYMENT & BANK (Kodingan Asli Milikmu Dipertahankan 100%)
                         Tabs\Tab::make('Payment & Bank')
                             ->icon('heroicon-o-credit-card')
                             ->schema([
@@ -125,6 +176,10 @@ class JournalThemeResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Journal Name')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('accreditation_status')
+                    ->label('Status')
+                    ->badge()
+                    ->color('info'),
                 Tables\Columns\TextColumn::make('author_fee_usd')
                     ->label('Author Fee')
                     ->money('USD'),
@@ -133,7 +188,8 @@ class JournalThemeResource extends Resource
             ])
             ->filters([])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->label('Update Settings'),
             ]);
     }
 

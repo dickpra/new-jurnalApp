@@ -31,10 +31,5 @@ class DatabaseSeeder extends Seeder
                 'password' => Hash::make('12345678'), // ubah sesuai kebutuhan
                 'is_super_admin' => true,
             ]);
-            user::create([
-                'name' => 'editor',
-                'email' => 'chair@chair.com',
-                'password' => Hash::make('12345678'), // ubah sesuai kebutuhan
-            ]);
     }
 }

@@ -74,7 +74,7 @@
                             <a href="{{ route('jurnal.show', $theme->slug) }}">{{ $theme->name }}</a>
                         </h3>
                         <p class="text-slate-600 text-sm leading-relaxed text-justify line-clamp-4">
-                            {{ $theme->description }}
+                            {{ strip_tags($theme->description) }}
                         </p>
                     </div>
 

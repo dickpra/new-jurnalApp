@@ -62,7 +62,7 @@ class AuthorController extends Controller
 
         ]);
 
-        return redirect()->route('author.dashboard')->with('success', 'Naskah berhasil dikirim ke ' . $journalTheme->name);
+        return redirect()->route('author.dashboard')->with('success', 'Paper has been submitted to ' . $journalTheme->name);
     }
 
     // Menampilkan Detail Naskah
@@ -162,7 +162,7 @@ class AuthorController extends Controller
         }
 
         $request->validate([
-            'payment_proof' => 'required|image|mimes:jpeg,png,jpg|max:5120', // Maks 5MB, format gambar
+            'payment_proof' => 'required|file|mimes:pdf,png,jpeg,jpg,docx|max:5120',
         ]);
 
         $path = $request->file('payment_proof')->store('payments', 'local');

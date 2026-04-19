@@ -13,7 +13,7 @@
                 <div class="border-b border-slate-200 pb-6 mb-8">
                     <span class="text-xs font-bold text-slate-400 uppercase tracking-widest block mb-2">New Submission</span>
                     <h2 class="text-3xl font-serif font-bold text-slate-900">{{ $journalTheme->name }}</h2>
-                    <p class="text-sm text-slate-500 mt-2">Please complete the metadata carefully before submitting your final manuscript.</p>
+                    <p class="text-sm text-slate-500 mt-2">Please complete the metadata carefully before submitting your final paper.</p>
                 </div>
 
                 <form action="{{ route('author.store', $journalTheme->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-8">
@@ -21,7 +21,7 @@
 
                     <!-- Title -->
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-2">Manuscript Title <span class="text-rose-600">*</span></label>
+                        <label class="block text-sm font-bold text-slate-800 mb-2">Paper Title <span class="text-rose-600">*</span></label>
                         <textarea name="title" rows="2" class="w-full border-slate-300 rounded-md focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 bg-slate-50 font-serif text-lg py-3 resize-none" required></textarea>
                         @error('title') <span class="text-rose-600 text-xs mt-1">{{ $message }}</span> @enderror
                     </div>
@@ -108,7 +108,7 @@
 
                     <!-- File Upload -->
                     <div>
-                        <label class="block text-sm font-bold text-slate-800 mb-2">Manuscript File (DOCX / PDF) <span class="text-rose-600">*</span></label>
+                        <label class="block text-sm font-bold text-slate-800 mb-2">Paper File (DOCX / PDF) <span class="text-rose-600">*</span></label>
                         <div class="mt-1">
                             <input id="file-upload" name="manuscript_file" type="file" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 border border-slate-300 bg-slate-50 rounded" accept=".pdf,.doc,.docx" required>
                             <p class="text-[11px] text-slate-500 mt-2">Maximum file size: 10MB.</p>
@@ -118,7 +118,7 @@
 
                     <div class="pt-6 border-t border-slate-200 mt-8">
                         <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-indigo-700 text-white font-bold text-sm rounded shadow-sm hover:bg-indigo-800 transition">
-                            Submit Manuscript
+                            Submit Paper
                         </button>
                     </div>
                 </form>

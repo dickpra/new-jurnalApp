@@ -18,6 +18,8 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Navigation\MenuItem;
+
 
 class ManagerPanelProvider extends PanelProvider
 {
@@ -27,6 +29,23 @@ class ManagerPanelProvider extends PanelProvider
             ->id('manager')
             ->path('manager')
             ->login() // Menggunakan halaman login bawaan Filament
+
+            // ==========================================
+            // JAWABAN PERTANYAAN 1: Pintu Pulang ke Author
+            // ==========================================
+            ->userMenuItems([
+                MenuItem::make()
+                    ->label('Kembali ke Author Workspace') // Teks yang muncul
+                    ->url(fn (): string => route('author.dashboard')) // Arahkan ke rute Breeze kamu
+                    ->icon('heroicon-o-arrow-uturn-left') // Icon panah putar balik
+                    ->sort(1), // Muncul paling atas di dropdown profil
+            ])
+
+            // ==========================================
+            // JAWABAN PERTANYAAN 2: Percantik Tenant Switcher
+            // ==========================================
+            ->tenantMenu(true) // Memastikan menu dropdown antar jurnal aktif
+
             ->colors([
                 'primary' => Color::Indigo, // Bisa disesuaikan
             ])
@@ -39,6 +58,7 @@ class ManagerPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                \App\Filament\Manager\Widgets\MyJournalsWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

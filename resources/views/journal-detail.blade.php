@@ -99,7 +99,7 @@
                     
                     <div class="bg-white p-6 md:p-8 border border-slate-200 shadow-sm rounded-sm">
                         <a href="{{ route('author.submit', $journalTheme->slug) }}" class="w-full flex items-center justify-center px-6 py-3 bg-indigo-700 text-white font-bold rounded cursor-pointer hover:bg-indigo-800 transition mb-3 shadow-sm">
-                            Submit Manuscript
+                            Submit Article
                         </a>
                         <a href="{{ route('journal.archive', $journalTheme->slug) }}" class="w-full flex items-center justify-center px-6 py-3 bg-white border border-slate-300 text-slate-700 font-bold rounded hover:bg-slate-50 transition">
                             View All Archives

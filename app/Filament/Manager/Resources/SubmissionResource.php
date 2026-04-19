@@ -29,6 +29,33 @@ class SubmissionResource extends Resource
     protected static ?string $navigationLabel = 'Submissions';
     protected static ?string $pluralLabel = 'Daftar Naskah';
 
+    // 1. MENGAMBIL ANGKA JUMLAH NASKAH BARU
+    public static function getNavigationBadge(): ?string
+    {
+        $tenantId = \Filament\Facades\Filament::getTenant()?->id;
+
+        if (!$tenantId) return null;
+
+        $count = \App\Models\Submission::where('journal_theme_id', $tenantId)
+            ->where('status', \App\Enums\SubmissionStatus::PENDING) // Anggap PENDING adalah status baru masuk
+            ->count();
+
+        // Kalau lebih dari 0, munculkan angkanya. Kalau 0, sembunyikan.
+        return $count > 0 ? (string) $count : null;
+    }
+
+    // 2. MENGUBAH WARNA BADGE MENJADI MERAH (DANGER) JIKA ADA NASKAH BARU
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getNavigationBadge() !== null ? 'danger' : 'primary';
+    }
+
+    // 3. MEMBERI TEKS BANTUAN SAAT MOUSE DIARAHKAN KE BADGE
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Naskah Baru Belum Diproses!';
+    }
+
     public static function canCreate(): bool
     {
         return false;

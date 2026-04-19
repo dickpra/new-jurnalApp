@@ -211,8 +211,8 @@
                                 <form action="{{ route('author.submissions.payment', $submission->id) }}" method="POST" enctype="multipart/form-data" class="flex flex-col sm:flex-row items-end gap-4">
                                     @csrf
                                     <div class="w-full">
-                                        <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">Upload Payment Proof (JPG/PNG)</label>
-                                        <input type="file" name="payment_proof" class="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 border border-slate-300 rounded bg-white" required>
+                                        <label class="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">Upload Payment Proof (PDF / PNG)</label>
+                                        <input type="file" name="payment_proof" accept=".pdf,.png,.jpeg,.jpg,.docx" class="block w-full text-sm text-slate-600 file:mr-4 file:py-2 file:px-4 file:border-0 file:bg-slate-200 file:text-slate-700 hover:file:bg-slate-300 border border-slate-300 rounded bg-white" required>
                                         @error('payment_proof')
                                             <p class="text-rose-600 text-xs mt-1">{{ $message }}</p>
                                         @enderror

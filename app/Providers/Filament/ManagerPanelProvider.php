@@ -56,8 +56,8 @@ class ManagerPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Manager/Widgets'), for: 'App\\Filament\\Manager\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                // Widgets\AccountWidget::class,
+                // Widgets\FilamentInfoWidget::class,
                 \App\Filament\Manager\Widgets\MyJournalsWidget::class,
             ])
             ->middleware([

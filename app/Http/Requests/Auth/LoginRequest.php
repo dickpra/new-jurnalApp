@@ -49,6 +49,16 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // --- TAMBAHKAN BLOK KODE INI ---
+        if (! Auth::user()->is_approved) {
+            Auth::logout(); // Tendang keluar lagi
+            
+            throw ValidationException::withMessages([
+                'email' => 'This account has not been approved by the admin. Please wait for the queue.',
+            ]);
+        }
+        // --------------------------------
+
         RateLimiter::clear($this->throttleKey());
     }
 

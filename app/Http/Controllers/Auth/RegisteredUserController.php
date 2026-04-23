@@ -44,10 +44,10 @@ class RegisteredUserController extends Controller
             'country' => $request->country,
         ]);
 
-        event(new Registered($user));
+        // event(new Registered($user));
 
-        Auth::login($user);
+        // Auth::login($user);
 
-        return redirect(RouteServiceProvider::HOME);
+        return redirect(route('login'))->with('status', 'Registration successful! Your account is currently under review by the admin. A verification email will be sent once it is approved.');
     }
 }

@@ -25,7 +25,7 @@
                     @if(!empty($settings->logo_path))
                         <img src="{{ asset('storage/' . $settings->logo_path) }}" alt="Logo" class="h-10 object-contain">
                     @else
-                        <div class="w-8 h-8 bg-indigo-700 rounded text-white flex items-center justify-center font-bold font-serif">A</div>
+                        <x-application-logo class="w-8 h-8 text-indigo-700" />
                     @endif
                     <a href="{{ route('home') }}" class="text-xl font-serif font-bold text-slate-900 tracking-tight border-l pl-4 border-slate-300 ml-2 hover:text-indigo-700 transition">
                         {{ $settings->site_name ?? 'Publishing Platform' }}
@@ -48,7 +48,7 @@
         @yield('content')
     </main>
 
-    <footer class="bg-slate-900 border-t border-slate-800 text-slate-300 py-12 mt-auto">
+    <!-- <footer class="bg-slate-900 border-t border-slate-800 text-slate-300 py-12 mt-auto">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8">
             
             <div class="md:col-span-5">
@@ -78,7 +78,8 @@
         <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-slate-800 text-xs text-slate-500 flex justify-between">
             <p>&copy; {{ date('Y') }} {{ $settings->site_name ?? 'Publishing Platform' }}. All rights reserved.</p>
         </div>
-    </footer>
+    </footer> -->
 
+    @include('layouts.footer')
 </body>
 </html>

@@ -131,4 +131,10 @@ Route::get('/journal/{slug}/issue/{issue_id}', [JournalController::class, 'issue
 // Halaman Detail Artikel (Paper)
 Route::get('/journal/{slug}/article/{id}', [App\Http\Controllers\JournalController::class, 'articleDetail'])->name('journal.article.detail');
 
+Route::get('/page/{cmsPage:slug}', function (\App\Models\CmsPage $cmsPage) {
+    // Pastikan settings tetap terkirim ke view
+    $settings = \App\Models\SiteSetting::first(); 
+    return view('cms-page', compact('cmsPage', 'settings'));
+})->name('cms.show');
+
 require __DIR__.'/auth.php';

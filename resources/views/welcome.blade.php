@@ -97,7 +97,7 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-slate-900 border-t border-slate-800 text-slate-300 py-12">
+    <!-- <footer class="bg-slate-900 border-t border-slate-800 text-slate-300 py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-12 gap-8">
             
             <div class="md:col-span-5">
@@ -127,7 +127,8 @@
         <div class="max-w-7xl mx-auto px-4 mt-8 pt-8 border-t border-slate-800 text-xs text-slate-500 flex justify-between">
             <p>&copy; {{ date('Y') }} {{ $settings->site_name ?? 'Publishing Platform' }}. All rights reserved.</p>
         </div>
-    </footer>
+    </footer> -->
+    @include('layouts.footer')
 
 </body>
 </html>

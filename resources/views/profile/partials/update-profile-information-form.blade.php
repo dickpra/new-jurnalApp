@@ -48,7 +48,7 @@
         </div>
 
         <div>
-            <x-input-label for="country" :value="__('Country / Negara')" />
+            <x-input-label for="country" :value="__('Country')" />
             <select id="country" name="country" class="mt-1 block w-full border-slate-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm" required>
                 @foreach(config('countries') as $country)
                     <option value="{{ $country }}" {{ old('country', $user->country) == $country ? 'selected' : '' }}>

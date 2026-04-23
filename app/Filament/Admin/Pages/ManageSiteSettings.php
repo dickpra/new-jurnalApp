@@ -18,12 +18,14 @@ class ManageSiteSettings extends Page implements HasForms
     use InteractsWithForms;
 
     protected static ?string $navigationIcon = 'heroicon-o-globe-alt';
-    protected static ?string $navigationLabel = 'CMS & Site Settings';
+    protected static ?string $navigationLabel = 'Site Settings';
     protected static ?string $title = 'Pengaturan Halaman Depan';
+    protected static ?string $navigationGroup = 'Portal Settings';
+    protected static ?int $navigationSort = 2;
     protected static string $view = 'filament.admin.pages.manage-site-settings';
     
     // Urutan menu di sidebar panel Super Admin
-    protected static ?int $navigationSort = 10; 
+    // protected static ?int $navigationSort = 10; 
 
     public ?array $data = [];
 

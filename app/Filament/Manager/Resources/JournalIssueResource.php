@@ -44,17 +44,39 @@ class JournalIssueResource extends Resource
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Forms\Components\TextInput::make('volume')->label('Volume (Contoh: Vol. 1)')->required(),
-            Forms\Components\TextInput::make('issue')->label('Nomor Issue (Contoh: No. 2)')->required(),
-            Forms\Components\TextInput::make('year')->numeric()->required(),
-            Forms\Components\Toggle::make('is_active')->label('Status Aktif')->default(true),
-            Forms\Components\FileUpload::make('cover_image')
-            ->label('Sampul Volume (JPG/PNG)')
-            ->image()
-            ->directory('journal-covers') // Folder simpan
-            ->columnSpanFull(),
+            Forms\Components\Group::make()->schema([
+                Forms\Components\Section::make('Identitas Volume')->schema([
+                    Forms\Components\TextInput::make('volume')->label('Volume (Contoh: Vol. 1)')->required(),
+                    Forms\Components\TextInput::make('issue')->label('Nomor Issue (Contoh: No. 2)')->required(),
+                    Forms\Components\TextInput::make('year')->numeric()->required(),
+                ])->columns(3),
+
+                Forms\Components\Section::make('Jadwal Publikasi')->schema([
+                    Forms\Components\DateTimePicker::make('start_date')
+                        ->label('Buka Pendaftaran (Start)')
+                        ->required(),
+                    Forms\Components\DateTimePicker::make('end_date')
+                        ->label('Tutup Pendaftaran (Deadline)')
+                        ->after('start_date')
+                        ->required(),
+                    Forms\Components\DatePicker::make('publish_date')
+                        ->label('Rencana Terbit')
+                        ->required(),
+                ])->columns(3),
+            ])->columnSpan(['lg' => 2]),
+
+            Forms\Components\Group::make()->schema([
+                Forms\Components\Section::make('Pengaturan')->schema([
+                    Forms\Components\Toggle::make('is_active')->label('Status Aktif')->default(true),
+                    Forms\Components\FileUpload::make('cover_image')
+                        ->label('Sampul Volume (JPG/PNG)')
+                        ->image()
+                        ->directory('journal-covers'),
+                ]),
+            ])->columnSpan(['lg' => 1]),
+
             Forms\Components\Hidden::make('journal_theme_id')->default(fn () => Filament::getTenant()->id),
-        ]);
+        ])->columns(3);
     }
 
     public static function table(Table $table): Table

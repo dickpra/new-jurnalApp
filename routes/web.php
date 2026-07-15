@@ -137,4 +137,8 @@ Route::get('/page/{cmsPage:slug}', function (\App\Models\CmsPage $cmsPage) {
     return view('cms-page', compact('cmsPage', 'settings'));
 })->name('cms.show');
 
+Route::fallback(function () {
+    return redirect()->back();
+});
+
 require __DIR__.'/auth.php';

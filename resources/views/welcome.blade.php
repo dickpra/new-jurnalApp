@@ -34,10 +34,46 @@
                 </div>
                 <div class="hidden md:flex items-center space-x-6 text-sm font-semibold">
                     <a href="{{ route('home') }}" class="text-slate-600 hover:text-indigo-700 transition">Journals</a>
+                    
                     @auth
-                        <a href="{{ route('author.dashboard') }}" class="text-indigo-700 hover:text-indigo-900 transition">Dashboard</a>
+                        @if(auth()->user()->role === 'admin') 
+                            <a href="{{ url('/admin') }}" class="text-indigo-700 hover:text-indigo-900 transition">Admin Dashboard</a>
+                        @else
+                            <a href="{{ route('author.dashboard') }}" class="text-indigo-700 hover:text-indigo-900 transition">Dashboard</a>
+                        @endif
                     @else
-                        <a href="{{ route('login') }}" class="text-slate-600 hover:text-indigo-700 transition">Login</a>
+                        <!-- Wrapper Dropdown Login -->
+                            <div class="relative">
+                                <!-- Tombol Login Utama -->
+                                <button id="loginBtn" class="text-slate-600 hover:text-indigo-700 transition flex items-center gap-1 focus:outline-none">
+                                    Login
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                                
+                               <!-- Menu Pilihan dengan Ikon (Diperbaiki) -->
+                                <div id="loginDropdown" class="hidden absolute right-0 mt-2 w-48 bg-white border border-slate-100 rounded-md shadow-lg z-50 overflow-hidden">
+                                    <div class="py-1">
+                                        <!-- Pilihan: As User -->
+                                        <a href="{{ route('login') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition whitespace-nowrap">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                                            </svg>
+                                            <span>As User</span>
+                                        </a>
+                                        
+                                        <!-- Pilihan: As Admin -->
+                                        <a href="{{ url('/admin/login') }}" class="flex items-center gap-3 px-4 py-3 text-slate-600 hover:bg-indigo-50 hover:text-indigo-700 transition border-t border-slate-100 whitespace-nowrap">
+                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 shrink-0">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                                            </svg>
+                                            <span>As Admin</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        
                         <a href="{{ route('register') }}" class="px-5 py-2 bg-indigo-700 text-white rounded hover:bg-indigo-800 transition">Register</a>
                     @endauth
                 </div>
@@ -129,6 +165,24 @@
         </div>
     </footer> -->
     @include('layouts.footer')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const loginBtn = document.getElementById('loginBtn');
+            const loginDropdown = document.getElementById('loginDropdown');
 
+            // Buka/Tutup dropdown saat tombol diklik
+            loginBtn.addEventListener('click', function(event) {
+                event.stopPropagation(); // Mencegah klik menyebar ke body
+                loginDropdown.classList.toggle('hidden');
+            });
+
+            // Tutup dropdown otomatis jika user mengklik area lain di luar menu
+            document.addEventListener('click', function(event) {
+                if (!loginBtn.contains(event.target) && !loginDropdown.contains(event.target)) {
+                    loginDropdown.classList.add('hidden');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

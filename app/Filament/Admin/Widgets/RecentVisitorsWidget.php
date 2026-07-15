@@ -38,6 +38,7 @@ class RecentVisitorsWidget extends BaseWidget
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Waktu Kunjungan')
                     ->dateTime('d M Y, H:i')
+                    ->timezone(fn () => request()->cookie('client_timezone') ?? 'Asia/Jakarta')
                     ->sortable(),
             ])
             ->paginated([5, 10, 25]); // Menampilkan 5 baris per halaman

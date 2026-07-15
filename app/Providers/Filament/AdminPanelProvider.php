@@ -17,6 +17,8 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\Blade;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -27,6 +29,12 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
+            
+            // 2. JavaScript diam-diam menanamkan Cookie zona waktu asli laptop pengguna
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => Blade::render('<script>document.cookie = "client_timezone=" + Intl.DateTimeFormat().resolvedOptions().timeZone + "; path=/";</script>')
+            )
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -50,6 +58,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                \App\Http\Middleware\SetDynamicTimezone::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

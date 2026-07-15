@@ -42,7 +42,7 @@
                 </div>
             @empty
                 <div class="col-span-full">
-                    <p class="text-slate-500 italic text-xs">Menu footer belum diatur di Admin.</p>
+                    <!-- <p class="text-slate-500 italic text-xs">Menu footer belum diatur di Admin.</p> -->
                 </div>
             @endforelse
         </div>
